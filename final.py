@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (QWidget, QApplication, QLabel, QVBoxLayout, QLine
 from PySide6.QtCore import Slot
 from __feature__ import snake_case, true_property
 from PySide6.QtGui import QPixmap
+from placeimage import place_image
 
 
 my_app = QApplication([])
@@ -32,16 +33,6 @@ class MyWindow(QWidget):
         self.my_y_le = QLineEdit("")
         self.my_y_le.minimum_width = 250
         #The image will be placed with the top left corner on the given pixel
-
-        self.bg_blend_le_lbl = QLabel('Enter background blend strength:')
-        self.my_bg_blend_le = QLineEdit("")
-        self.my_bg_blend_le.minimum_width = 250
-        #blending from the edge of the subject into the background
-
-        self.s_blend_le_lbl = QLabel('Enter subject blend strength:')
-        self.my_s_blend_le = QLineEdit("")
-        self.my_s_blend_le.minimum_width = 250
-        #blending from the edge of the subject into the subject
 
         self.my_list = ["None", "Sepia", "Negative", "Grayscale", "Thumbnail", "Chromatic Abberation"]
 
@@ -69,6 +60,22 @@ class MyWindow(QWidget):
         self.my_s_h_le = QLineEdit("0")
         self.my_s_h_le.minimum_width = 250
         #negative sizes will mean the image will be flipped
+
+        self.blend_list = ["Linear","Outward","Inward"]
+
+        self.blend_cb_lbl = QLabel('Enter edge blend type: ')
+        self.my_blend_combo_box = QComboBox()
+        self.my_blend_combo_box.add_items(self.blend_list)
+
+        self.b_s_le_lbl = QLabel('Enter edge blend srength:')
+        self.my_b_s_le = QLineEdit("0")
+        self.my_b_s_le.minimum_width = 250
+
+        self.corner_list = ["Sharp","Rounded","Diagonal"]
+
+        self.c_s_le_lbl = QLabel('Enter corner style:')
+        self.my_corner_combo_box = QComboBox()
+        self.my_corner_combo_box.add_items(self.corner_list)
         
         my_btn = QPushButton("Submit")
 
@@ -82,10 +89,6 @@ class MyWindow(QWidget):
         vbox.add_widget(self.my_x_le)
         vbox.add_widget(self.y_le_lbl)
         vbox.add_widget(self.my_y_le)
-        vbox.add_widget(self.bg_blend_le_lbl)
-        vbox.add_widget(self.my_bg_blend_le)
-        vbox.add_widget(self.s_blend_le_lbl)
-        vbox.add_widget(self.my_s_blend_le)
         vbox.add_widget(self.bg_cb_lbl)
         vbox.add_widget(self.my_bg_combo_box)
         vbox.add_widget(self.s_cb_lbl)
@@ -98,6 +101,12 @@ class MyWindow(QWidget):
         vbox.add_widget(self.my_s_w_le)
         vbox.add_widget(self.s_h_le_lbl)
         vbox.add_widget(self.my_s_h_le)
+        vbox.add_widget(self.blend_cb_lbl)
+        vbox.add_widget(self.my_blend_combo_box)
+        vbox.add_widget(self.b_s_le_lbl)
+        vbox.add_widget(self.my_b_s_le)
+        vbox.add_widget(self.c_s_le_lbl)
+        vbox.add_widget(self.my_corner_combo_box)
 
         vbox.add_widget(my_btn)
 
@@ -117,7 +126,11 @@ class MyWindow(QWidget):
         bg_h = int(self.my_bg_w_le.text)
         s_w = int(self.my_bg_w_le.text)
         s_h = int(self.my_bg_w_le.text)
-        place_image(bg,subject,bg_manip,s_manip,x,y,bg_w,bg_h,s_w,s_h)
+        blend_style = self.my_blend_combo_box.current_text
+        blend_strength = int(self.my_b_s_le.text)
+        corner = self.my_corner_combo_box.current_text
+        place_image(bg,subject,bg_manip,s_manip,x,y,bg_w,bg_h,s_w,s_h,blend_style,blend_strength,corner)
+        rw = ResultWindow()
 
 
 
@@ -132,11 +145,6 @@ class ResultWindow(QWidget):
         self.set_layout(self.layout)
         self.show()
 
-def place_image(bg,subject,bg_manip,s_manip,x,y,bg_w,bg_h,s_w,s_h):
-    return
-
-
-        
 
 my_win = MyWindow() 
 sys.exit(my_app.exec())
