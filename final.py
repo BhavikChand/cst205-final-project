@@ -1,13 +1,15 @@
 #Author: Michael Conley
 #Class: CST 205
-#Date: 11/15/2023
-#Description: Creates a window that takes 2 file names, an xy coordinate, and blend strengths and manipulations for both images, then places the second image on the first according to the information given.
+#Date: 12/4/2023
+#Description: Creates a window that takes 2 file names, an xy coordinate, sizes for both images, and manipulation choice, then places the second image on the first according to the information given.
 import sys
 from PySide6.QtWidgets import (QWidget, QApplication, QLabel, QVBoxLayout, QLineEdit, QComboBox, QPushButton)
 from PySide6.QtCore import Slot
 from __feature__ import snake_case, true_property
 from PySide6.QtGui import QPixmap
 from placeimage import place_image
+
+from PIL import Image
 
 
 my_app = QApplication([])
@@ -25,12 +27,12 @@ class MyWindow(QWidget):
         self.my_s_le = QLineEdit("")
         self.my_s_le.minimum_width = 250
 
-        self.x_le_lbl = QLabel('Enter subject image x coordinate:')
-        self.my_x_le = QLineEdit("")
+        self.x_le_lbl = QLabel('Enter subject image x coordinate (0 for left, -1 for center, -2 for right):')
+        self.my_x_le = QLineEdit("0")
         self.my_x_le.minimum_width = 250
 
-        self.y_le_lbl = QLabel('Enter subject image y coordinate:')
-        self.my_y_le = QLineEdit("")
+        self.y_le_lbl = QLabel('Enter subject image y coordinate (0 for top, -1 for center, -2 for bottom):')
+        self.my_y_le = QLineEdit("0")
         self.my_y_le.minimum_width = 250
         #The image will be placed with the top left corner on the given pixel
 
@@ -120,17 +122,20 @@ class MyWindow(QWidget):
         subject = "finalimages/"+self.my_s_le.text
         bg_manip = self.my_bg_combo_box.current_text
         s_manip = self.my_s_combo_box.current_text
-        x = int(self.my_x_le.text)
-        y = int(self.my_y_le.text)
+        x_pos = int(self.my_x_le.text)
+        y_pos = int(self.my_y_le.text)
         bg_w = int(self.my_bg_w_le.text)
-        bg_h = int(self.my_bg_w_le.text)
-        s_w = int(self.my_bg_w_le.text)
-        s_h = int(self.my_bg_w_le.text)
+        bg_h = int(self.my_bg_h_le.text)
+        s_w = int(self.my_s_w_le.text)
+        s_h = int(self.my_s_h_le.text)
         blend_style = self.my_blend_combo_box.current_text
         blend_strength = int(self.my_b_s_le.text)
         corner = self.my_corner_combo_box.current_text
-        place_image(bg,subject,bg_manip,s_manip,x,y,bg_w,bg_h,s_w,s_h,blend_style,blend_strength,corner)
+        place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,blend_style,blend_strength,corner)
         rw = ResultWindow()
+
+
+        
 
 
 
