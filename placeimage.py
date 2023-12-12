@@ -128,12 +128,57 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                     pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (bg_im.getpixel(base)[n]*foo))
                 pixel = (pixel[0],pixel[1],pixel[2])
                 bg_im.putpixel((x,y),pixel)
-
-
     bg_im.save("finalimages/result.jpg")
 
-def manipulate(manip,im):
-    return im
+# small wrapper
+def grayscale_pixel(pixel):
+    gray_value = int((pixel[0] + pixel[1] + pixel[2]) / 3)
+    return (gray_value, gray_value, gray_value)
+
+def manipulate(selected_manipulation,image):
+    width, height = image.size
+    if selected_manipulation == "None":
+        return image
+    elif selected_manipulation == "Sepia":
+        sepia = Image.new('RGB', image.size)
+        for x in range(width):
+            for y in range(height):
+                r, g, b = image.getpixel((x, y))
+                tr = int(0.393 * r + 0.769 * g + 0.189 * b)
+                tg = int(0.349 * r + 0.686 * g + 0.168 * b)
+                tb = int(0.272 * r + 0.534 * g + 0.131 * b)
+                sepia.putpixel((x, y), (tr, tg, tb))
+        return sepia
+    elif selected_manipulation == "Negative":
+        negative_image = Image.new('RGB', (width, height))
+        for x in range(width):
+            for y in range(height):
+                r, g, b = image.getpixel((x, y))
+                new_r = 255 - r
+                new_g = 255 - g
+                new_b = 255 - b
+                negative_image.putpixel((x, y), (new_r, new_g, new_b))
+        return negative_image
+    elif selected_manipulation == "Grayscale":
+        grayscale_image = Image.new("RGB", (width, height))
+        for y in range(height):
+            for x in range(width):
+                pixel = image.getpixel((x, y))
+                gray_pixel = grayscale_pixel(pixel)
+                grayscale_image.putpixel((x, y), gray_pixel)
+        return grayscale_image
+    elif selected_manipulation == "Thumbnail":
+        image = Image.open(image_path)
+        width, height = image.size
+        thumbnail_width = width // 2
+        thumbnail_height = height // 2
+        thumbnail = Image.new("RGB", (thumbnail_width, thumbnail_height))
+
+        for y in range(thumbnail_height):
+            for x in range(thumbnail_width):
+                pixel = image.getpixel((x * 2, y * 2))
+                thumbnail.putpixel((x, y), pixel)
+        return thumbnail
 
 def resize(im,w,h):
     out = Image.new("RGB",(w,h))
