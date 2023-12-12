@@ -1,4 +1,5 @@
-from PIL import Image
+from PIL import Image, ImageChops
+
 import math
 def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_style,b_strength,corner,bg_t,bg_b,bg_l,bg_r,s_t,s_b,s_l,s_r):
     bg_im = Image.open(bg)
@@ -168,17 +169,26 @@ def manipulate(selected_manipulation,image):
                 grayscale_image.putpixel((x, y), gray_pixel)
         return grayscale_image
     elif selected_manipulation == "Thumbnail":
-        image = Image.open(image_path)
         width, height = image.size
         thumbnail_width = width // 2
         thumbnail_height = height // 2
         thumbnail = Image.new("RGB", (thumbnail_width, thumbnail_height))
-
         for y in range(thumbnail_height):
             for x in range(thumbnail_width):
                 pixel = image.getpixel((x * 2, y * 2))
                 thumbnail.putpixel((x, y), pixel)
         return thumbnail
+    elif selected_manipulation == 'Chromatic Abberation':
+        r, g, b = image.split()
+        # Default it to 10.
+        shift_amount = 10
+        # Shift the color channels
+        r_shifted = ImageChops.offset(r, shift_amount, 0)
+        g_shifted = ImageChops.offset(g, 0, shift_amount)
+        b_shifted = ImageChops.offset(b, -shift_amount, -shift_amount)
+        # Merge the shifted channels
+        result_image = Image.merge("RGB", (r_shifted, g_shifted, b_shifted))
+        return result_image
 
 def resize(im,w,h):
     out = Image.new("RGB",(w,h))
