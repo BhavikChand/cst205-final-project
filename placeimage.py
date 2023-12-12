@@ -187,8 +187,7 @@ def manipulate(selected_manipulation,image):
         g_shifted = ImageChops.offset(g, 0, shift_amount)
         b_shifted = ImageChops.offset(b, -shift_amount, -shift_amount)
         # Merge the shifted channels
-        result_image = Image.merge("RGB", (r_shifted, g_shifted, b_shifted))
-        return result_image
+        return Image.merge("RGB", (r_shifted, g_shifted, b_shifted))
 
 def resize(im,w,h):
     out = Image.new("RGB",(w,h))
