@@ -1,24 +1,30 @@
 #Author: Michael Conley
 #Class: CST 205
 #Date: 12/4/2023
-#Description: Creates a window that takes 2 file names, an xy coordinate, sizes for both images, and manipulation choice, then places the second image on the first according to the information given.
-from PySide6.QtWidgets import (QWidget, QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QComboBox, QPushButton)
+#Description: Creates a window that takes indexes, an xy coordinate, sizes for both images, cropping for all sides of both images, edge blending style and strength, aorner style, and manipulation choice, then places the second image on the first according to the information given.
+import sys
+from PySide6.QtWidgets import (QWidget, QApplication, QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QComboBox, QPushButton)
 from PySide6.QtCore import Slot
 from __feature__ import snake_case, true_property
 from PySide6.QtGui import QPixmap
-from src.placeimage import place_image,resize
+from placeimage import place_image,resize
+from image_retrieval import get_image_url
+
 from PIL import Image
+
+
+my_app = QApplication([])
 
 class MyWindow(QWidget):
     def __init__(self):
         super().__init__()
         vbox = QVBoxLayout()
 
-        self.bg_le_lbl = QLabel('Enter background image file name:')
+        self.bg_le_lbl = QLabel('Enter background image ID Number:')
         self.my_bg_le = QLineEdit("")
         self.my_bg_le.minimum_width = 250
         
-        self.s_le_lbl = QLabel('Enter subject image file name:')
+        self.s_le_lbl = QLabel('Enter subject image ID Number:')
         self.my_s_le = QLineEdit("")
         self.my_s_le.minimum_width = 250
 
@@ -112,28 +118,27 @@ class MyWindow(QWidget):
         hbox = QHBoxLayout()
         bg_box = QVBoxLayout()
         s_box = QVBoxLayout()
-        bg_select_box = QHBoxLayout()
-        s_select_box = QHBoxLayout()
 
-        bg_left_btn = QPushButton("<")
-        bg_right_btn = QPushButton(">")
-        s_left_btn = QPushButton("<")
-        s_right_btn = QPushButton(">")
+
+
+
+
+        bg_btn = QPushButton("Preview")
+        bg_btn.clicked.connect(self.preview_bg)
+        s_btn = QPushButton("Preview")
+        s_btn.clicked.connect(self.preview_subject)
+        
         
 
-        bg_select_box.add_widget(bg_left_btn)
-        bg_select_box.add_widget(bg_right_btn)
-        s_select_box.add_widget(s_left_btn)
-        s_select_box.add_widget(s_right_btn)
         
 
 
         bg_box.add_widget(self.bg_le_lbl)
         bg_box.add_widget(self.my_bg_le)
-        bg_box.add_layout(bg_select_box)
+        bg_box.add_widget(bg_btn)
         s_box.add_widget(self.s_le_lbl)
         s_box.add_widget(self.my_s_le)
-        s_box.add_layout(s_select_box)
+        s_box.add_widget(s_btn)
         vbox.add_widget(self.x_le_lbl)
         vbox.add_widget(self.my_x_le)
         vbox.add_widget(self.y_le_lbl)
@@ -173,27 +178,10 @@ class MyWindow(QWidget):
         s_box.add_widget(self.s_r_c_le_lbl)
         s_box.add_widget(self.my_s_r_c_le)
 
-        bg_display_box = QVBoxLayout()
-        self.bg_d_lbl = QLabel('Background preview:')
-        bg_display_box.add_widget(self.bg_d_lbl)
-        s_display_box = QVBoxLayout()
-        self.s_d_lbl = QLabel('Subject preview:')
-        s_display_box.add_widget(self.s_d_lbl)
 
-        bg_label = QLabel()
-        bg_pixmap = QPixmap('finalimages/background.jpg')
-        bg_label.pixmap = bg_pixmap
-        bg_display_box.add_widget(bg_label)
-        
-        s_label = QLabel()
-        s_pixmap = QPixmap('finalimages/subject.jpg')
-        s_label.pixmap = s_pixmap
-        s_display_box.add_widget(s_label)
 
-        hbox.add_layout(bg_display_box)
         hbox.add_layout(bg_box)
         hbox.add_layout(s_box)
-        hbox.add_layout(s_display_box)
         vbox.add_layout(hbox)
         vbox.add_widget(my_btn)
 
@@ -204,9 +192,23 @@ class MyWindow(QWidget):
     
 
     @Slot()
+    def preview_bg(self):
+        im = get_image_url(int(self.my_bg_le.text))
+        im = im.convert("RGB")
+        im.save("finalimages/preview.jpg")
+        pw = PreviewWindow()
+        
+    @Slot()
+    def preview_subject(self):
+        im = get_image_url(int(self.my_s_le.text))
+        im = im.convert("RGB")
+        im.save("finalimages/preview.jpg")
+        pw = PreviewWindow()
+
+    @Slot()
     def on_submit(self):
-        bg = "finalimages/"+self.my_bg_le.text
-        subject = "finalimages/"+self.my_s_le.text
+        bg = self.images[int(self.my_bg_le.text)]
+        subject = self.images[int(self.my_s_le.text)]
         bg_manip = self.my_bg_combo_box.current_text
         s_manip = self.my_s_combo_box.current_text
         x_pos = int(self.my_x_le.text)
@@ -229,6 +231,21 @@ class MyWindow(QWidget):
         place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,blend_style,blend_strength,corner,bg_t,bg_b,bg_l,bg_r,s_t,s_b,s_l,s_r)
         rw = ResultWindow()
 
+
+        
+class PreviewWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        label = QLabel()
+        my_pixmap = QPixmap('finalimages/preview.jpg')
+        label.pixmap = my_pixmap
+        self.layout = QVBoxLayout()
+        self.layout.add_widget(label)
+        self.set_layout(self.layout)
+        self.show()
+
+
+
 class ResultWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -239,3 +256,11 @@ class ResultWindow(QWidget):
         self.layout.add_widget(label)
         self.set_layout(self.layout)
         self.show()
+
+
+
+
+        
+
+my_win = MyWindow() 
+sys.exit(my_app.exec())

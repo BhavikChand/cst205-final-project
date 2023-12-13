@@ -2,8 +2,8 @@ from PIL import Image, ImageChops
 
 import math
 def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_style,b_strength,corner,bg_t,bg_b,bg_l,bg_r,s_t,s_b,s_l,s_r):
-    bg_im = Image.open(bg)
-    s_im = Image.open(subject)
+    bg_im = bg
+    s_im = subject
     if(s_w == 0):
         s_w = s_im.width - s_l - s_r
     if(s_h == 0):
