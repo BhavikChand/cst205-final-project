@@ -207,8 +207,8 @@ class MyWindow(QWidget):
 
     @Slot()
     def on_submit(self):
-        bg = self.images[int(self.my_bg_le.text)]
-        subject = self.images[int(self.my_s_le.text)]
+        bg = get_image_url(int(self.my_bg_le.text))
+        subject = get_image_url(int(self.my_s_le.text))
         bg_manip = self.my_bg_combo_box.current_text
         s_manip = self.my_s_combo_box.current_text
         x_pos = int(self.my_x_le.text)

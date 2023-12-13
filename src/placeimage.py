@@ -1,5 +1,4 @@
-from PIL import Image, ImageChops
-
+from PIL import Image
 import math
 def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_style,b_strength,corner,bg_t,bg_b,bg_l,bg_r,s_t,s_b,s_l,s_r):
     bg_im = bg
@@ -14,13 +13,13 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
         bg_h = bg_im.height - bg_t - bg_b
 
     if(x_pos == -1):
-        x_pos = (bg_w//2)-(s_w//2)
+        x_pos = (bg_w//2)-(s_w//2) + s_l
     if(x_pos == -2):
-        x_pos == bg_w-s_w
+        x_pos == bg_w-s_w+s_l
     if(y_pos == -1):
-        y_pos = (bg_h//2)-(s_h//2)
+        y_pos = (bg_h//2)-(s_h//2)+s_l
     if(y_pos == -2):
-        y_pos == bg_h - s_h
+        y_pos == bg_h - s_h+s_l
 
     bg_im = manipulate(bg_manip,crop(resize(bg_im,bg_w,bg_h),bg_t,bg_b,bg_l,bg_r))
     s_im = manipulate(s_manip,resize(s_im,s_w,s_h))
@@ -34,12 +33,12 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                 continue
             if x + x_pos >= bg_im.width:
                 break
-            bg_im.putpixel((x+x_pos-bg_l,y+y_pos-bg_t),s_im.getpixel((x+s_l,y+s_t)))
+            bg_im.putpixel((x+x_pos,y+y_pos),s_im.getpixel((x+s_l,y+s_t)))
         
     left = x_pos
-    right = x_pos + s_w - 1
+    right = x_pos + s_w - s_l - s_r - 1
     top = y_pos
-    bottom = y_pos + s_h - 1
+    bottom = y_pos + s_h - s_t - s_b - 1
     left_ranges = (range(top,bottom+1),range(left,left-b_strength,-1),True)
     right_ranges = (range(top,bottom+1),range(right,right+b_strength),True)
     top_ranges = (range(left,right+1),range(top,top-b_strength,-1),False)
@@ -129,65 +128,12 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                     pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (bg_im.getpixel(base)[n]*foo))
                 pixel = (pixel[0],pixel[1],pixel[2])
                 bg_im.putpixel((x,y),pixel)
+
+
     bg_im.save("finalimages/result.jpg")
 
-# small wrapper
-def grayscale_pixel(pixel):
-    gray_value = int((pixel[0] + pixel[1] + pixel[2]) / 3)
-    return (gray_value, gray_value, gray_value)
-
-def manipulate(selected_manipulation,image):
-    width, height = image.size
-    if selected_manipulation == "None":
-        return image
-    elif selected_manipulation == "Sepia":
-        sepia = Image.new('RGB', image.size)
-        for x in range(width):
-            for y in range(height):
-                r, g, b = image.getpixel((x, y))
-                tr = int(0.393 * r + 0.769 * g + 0.189 * b)
-                tg = int(0.349 * r + 0.686 * g + 0.168 * b)
-                tb = int(0.272 * r + 0.534 * g + 0.131 * b)
-                sepia.putpixel((x, y), (tr, tg, tb))
-        return sepia
-    elif selected_manipulation == "Negative":
-        negative_image = Image.new('RGB', (width, height))
-        for x in range(width):
-            for y in range(height):
-                r, g, b = image.getpixel((x, y))
-                new_r = 255 - r
-                new_g = 255 - g
-                new_b = 255 - b
-                negative_image.putpixel((x, y), (new_r, new_g, new_b))
-        return negative_image
-    elif selected_manipulation == "Grayscale":
-        grayscale_image = Image.new("RGB", (width, height))
-        for y in range(height):
-            for x in range(width):
-                pixel = image.getpixel((x, y))
-                gray_pixel = grayscale_pixel(pixel)
-                grayscale_image.putpixel((x, y), gray_pixel)
-        return grayscale_image
-    elif selected_manipulation == "Thumbnail":
-        width, height = image.size
-        thumbnail_width = width // 2
-        thumbnail_height = height // 2
-        thumbnail = Image.new("RGB", (thumbnail_width, thumbnail_height))
-        for y in range(thumbnail_height):
-            for x in range(thumbnail_width):
-                pixel = image.getpixel((x * 2, y * 2))
-                thumbnail.putpixel((x, y), pixel)
-        return thumbnail
-    elif selected_manipulation == 'Chromatic Abberation':
-        r, g, b = image.split()
-        # Default it to 10.
-        shift_amount = 10
-        # Shift the color channels
-        r_shifted = ImageChops.offset(r, shift_amount, 0)
-        g_shifted = ImageChops.offset(g, 0, shift_amount)
-        b_shifted = ImageChops.offset(b, -shift_amount, -shift_amount)
-        # Merge the shifted channels
-        return Image.merge("RGB", (r_shifted, g_shifted, b_shifted))
+def manipulate(manip,im):
+    return im
 
 def resize(im,w,h):
     out = Image.new("RGB",(w,h))
