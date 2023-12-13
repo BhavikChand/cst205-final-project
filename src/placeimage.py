@@ -12,7 +12,7 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
     if(bg_h == 0):
         bg_h = bg_im.height - bg_t - bg_b
 
-    if(x_pos == -1):
+    if(x_pos == -1):    
         x_pos = (bg_w//2)-(s_w//2) + s_l
     if(x_pos == -2):
         x_pos == bg_w-s_w+s_l
@@ -87,8 +87,20 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                 if(b_style == "Wave"):
                     foo = math.sin((abs(m-baseline)*math.pi/b_strength)+math.pi/2)*0.5+0.5
                     bar = -(foo-0.5)+0.5
+                
+                sub_x = x - x_pos + s_l
+                sub_y = y - y_pos + s_t
+                if sub_x < 0:
+                    sub_x = 0
+                if sub_y < 0:
+                    sub_y = 0
+                if sub_x >= s_w:
+                    sub_x = s_w-1
+                if sub_y >= s_h:
+                    sub_y = s_h - 1
+
                 for n in range(0,3):
-                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (bg_im.getpixel(base)[n]*foo))
+                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (s_im.getpixel((sub_x,sub_y))[n]*foo))
                 pixel = (pixel[0],pixel[1],pixel[2])
                 bg_im.putpixel((x,y),pixel)
 
@@ -124,8 +136,20 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                 if(b_style == "Wave"):
                     bar = math.sin((1-bar+0.5)*math.pi)*0.5+0.5
                 foo = -(bar-0.5)+0.5
+
+                sub_x = x - x_pos + s_l
+                sub_y = y - y_pos + s_t
+                if sub_x < 0:
+                    sub_x = 0
+                if sub_y < 0:
+                    sub_y = 0
+                if sub_x >= s_w:
+                    sub_x = s_w-1
+                if sub_y >= s_h:
+                    sub_y = s_h - 1
+
                 for n in range(0,3):
-                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (bg_im.getpixel(base)[n]*foo))
+                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (s_im.getpixel((sub_x,sub_y))[n]*foo))
                 pixel = (pixel[0],pixel[1],pixel[2])
                 bg_im.putpixel((x,y),pixel)
 
