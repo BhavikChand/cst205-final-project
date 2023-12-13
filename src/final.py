@@ -154,17 +154,12 @@ sys.exit(my_app.exec())
 #Class: CST 205
 #Date: 12/4/2023
 #Description: Creates a window that takes 2 file names, an xy coordinate, sizes for both images, and manipulation choice, then places the second image on the first according to the information given.
-import sys
-from PySide6.QtWidgets import (QWidget, QApplication, QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QComboBox, QPushButton)
+from PySide6.QtWidgets import (QWidget, QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QComboBox, QPushButton)
 from PySide6.QtCore import Slot
 from __feature__ import snake_case, true_property
 from PySide6.QtGui import QPixmap
-from placeimage import place_image,resize
-
+from src.placeimage import place_image,resize
 from PIL import Image
-
-
-my_app = QApplication([])
 
 class MyWindow(QWidget):
     def __init__(self):
@@ -386,11 +381,6 @@ class MyWindow(QWidget):
         place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,blend_style,blend_strength,corner,bg_t,bg_b,bg_l,bg_r,s_t,s_b,s_l,s_r)
         rw = ResultWindow()
 
-
-        
-
-
-
 class ResultWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -401,12 +391,3 @@ class ResultWindow(QWidget):
         self.layout.add_widget(label)
         self.set_layout(self.layout)
         self.show()
-
-
-
-
-        
-
-my_win = MyWindow() 
-sys.exit(my_app.exec())
->>>>>>> 69dcb5ff73f17761633387546cea19f614629254
