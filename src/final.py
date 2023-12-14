@@ -7,13 +7,10 @@ from PySide6.QtWidgets import (QWidget, QApplication, QLabel, QVBoxLayout, QHBox
 from PySide6.QtCore import Slot
 from __feature__ import snake_case, true_property
 from PySide6.QtGui import QPixmap
-from placeimage import place_image,resize
-from image_retrieval import get_image_url
+from src.image_retrieval import get_image_url
+from src.placeimage import place_image,resize
 
 from PIL import Image
-
-
-my_app = QApplication([])
 
 class MyWindow(QWidget):
     def __init__(self):
@@ -256,11 +253,3 @@ class ResultWindow(QWidget):
         self.layout.add_widget(label)
         self.set_layout(self.layout)
         self.show()
-
-
-
-
-        
-
-my_win = MyWindow() 
-sys.exit(my_app.exec())
