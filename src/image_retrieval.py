@@ -24,4 +24,3 @@ def get_image_url(index):
         except requests.RequestException as e:
             print(f"Error retrieving images from URL: {e}")
             return None
-
