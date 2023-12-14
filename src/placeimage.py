@@ -2,8 +2,8 @@ from PIL import Image, ImageChops
 
 import math
 def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_style,b_strength,corner,bg_t,bg_b,bg_l,bg_r,s_t,s_b,s_l,s_r):
-    bg_im = Image.open(bg)
-    s_im = Image.open(subject)
+    bg_im = bg
+    s_im = subject
     if(s_w == 0):
         s_w = s_im.width - s_l - s_r
     if(s_h == 0):
@@ -13,14 +13,14 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
     if(bg_h == 0):
         bg_h = bg_im.height - bg_t - bg_b
 
-    if(x_pos == -1):
-        x_pos = (bg_w//2)-(s_w//2)
+    if(x_pos == -1):    
+        x_pos = (bg_w//2)-(s_w//2) + s_l
     if(x_pos == -2):
-        x_pos == bg_w-s_w
+        x_pos == bg_w-s_w+s_l
     if(y_pos == -1):
-        y_pos = (bg_h//2)-(s_h//2)
+        y_pos = (bg_h//2)-(s_h//2)+s_l
     if(y_pos == -2):
-        y_pos == bg_h - s_h
+        y_pos == bg_h - s_h+s_l
 
     bg_im = manipulate(bg_manip,crop(resize(bg_im,bg_w,bg_h),bg_t,bg_b,bg_l,bg_r))
     s_im = manipulate(s_manip,resize(s_im,s_w,s_h))
@@ -34,12 +34,12 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                 continue
             if x + x_pos >= bg_im.width:
                 break
-            bg_im.putpixel((x+x_pos-bg_l,y+y_pos-bg_t),s_im.getpixel((x+s_l,y+s_t)))
+            bg_im.putpixel((x+x_pos,y+y_pos),s_im.getpixel((x+s_l,y+s_t)))
         
     left = x_pos
-    right = x_pos + s_w - 1
+    right = x_pos + s_w - s_l - s_r - 1
     top = y_pos
-    bottom = y_pos + s_h - 1
+    bottom = y_pos + s_h - s_t - s_b - 1
     left_ranges = (range(top,bottom+1),range(left,left-b_strength,-1),True)
     right_ranges = (range(top,bottom+1),range(right,right+b_strength),True)
     top_ranges = (range(left,right+1),range(top,top-b_strength,-1),False)
@@ -88,8 +88,20 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                 if(b_style == "Wave"):
                     foo = math.sin((abs(m-baseline)*math.pi/b_strength)+math.pi/2)*0.5+0.5
                     bar = -(foo-0.5)+0.5
+                
+                sub_x = x - x_pos + s_l
+                sub_y = y - y_pos + s_t
+                if sub_x < 0:
+                    sub_x = 0
+                if sub_y < 0:
+                    sub_y = 0
+                if sub_x >= s_w:
+                    sub_x = s_w-1
+                if sub_y >= s_h:
+                    sub_y = s_h - 1
+
                 for n in range(0,3):
-                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (bg_im.getpixel(base)[n]*foo))
+                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (s_im.getpixel((sub_x,sub_y))[n]*foo))
                 pixel = (pixel[0],pixel[1],pixel[2])
                 bg_im.putpixel((x,y),pixel)
 
@@ -125,16 +137,25 @@ def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_styl
                 if(b_style == "Wave"):
                     bar = math.sin((1-bar+0.5)*math.pi)*0.5+0.5
                 foo = -(bar-0.5)+0.5
+
+                sub_x = x - x_pos + s_l
+                sub_y = y - y_pos + s_t
+                if sub_x < 0:
+                    sub_x = 0
+                if sub_y < 0:
+                    sub_y = 0
+                if sub_x >= s_w:
+                    sub_x = s_w-1
+                if sub_y >= s_h:
+                    sub_y = s_h - 1
+
                 for n in range(0,3):
-                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (bg_im.getpixel(base)[n]*foo))
+                    pixel[n] = int(bar*bg_im.getpixel((x,y))[n] + (s_im.getpixel((sub_x,sub_y))[n]*foo))
                 pixel = (pixel[0],pixel[1],pixel[2])
                 bg_im.putpixel((x,y),pixel)
-    bg_im.save("finalimages/result.jpg")
 
-# small wrapper
-def grayscale_pixel(pixel):
-    gray_value = int((pixel[0] + pixel[1] + pixel[2]) / 3)
-    return (gray_value, gray_value, gray_value)
+
+    bg_im.save("finalimages/result.jpg")
 
 def manipulate(selected_manipulation,image):
     width, height = image.size

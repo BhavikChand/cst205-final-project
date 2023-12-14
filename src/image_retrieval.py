@@ -7,37 +7,19 @@ Description: this module handles the retrieval of images from the URLs input by 
 from PIL import Image
 import requests
 from bs4 import BeautifulSoup
-import os
 
 def save_image(img_data, filename):
     with open(filename, 'wb') as f:
         f.write(img_data)
 
-def get_image_url(self, url, is_background=True):
+def get_image_url(index):
         try:
-            response = requests.get(url)
+            response = requests.get("https://www.nasa.gov")
             response.raise_for_status()
-            soup = BeautifulSoup(response.content, 'html.parser')
+            soup = BeautifulSoup(response.text, 'html.parser')
             img_tags = soup.find_all('img')
-
-            images_list = []
-            for img_tag in img_tags:
-                img_url = img_tag.get('src')
-                if img_url:
-                    img_data = requests.get(img_url).content
-                    img = Image.open(io.BytesIO(img_data))
-                    images_list.append(img)
-
-            if is_background:
-                self.bg_images = images_list
-            else:
-                self.subject_images = images_list
-
-            if images_list:
-                return images_list
-            else:
-                print(f"No images found on the page.")
-                return None
+            return Image.open(requests.get(img_tags[index]['src'], stream = True).raw)
+            
 
         except requests.RequestException as e:
             print(f"Error retrieving images from URL: {e}")
