@@ -1,4 +1,4 @@
-How clean is our code? ![pylint]() <!-- This badge will become visible once github actions have write perms... -->
+How clean is our code? ![pylint]() <!-- This badge will become visible once github actions have write perms. -->
 
 # CST 205 Final Project
 
