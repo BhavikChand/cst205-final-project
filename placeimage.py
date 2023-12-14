@@ -1,5 +1,6 @@
 from PIL import Image
 def place_image(bg,subject,bg_manip,s_manip,x_pos,y_pos,bg_w,bg_h,s_w,s_h,b_style,b_strength,corner):
+    print("test")
     bg_im = Image.open(bg)
     s_im = Image.open(subject)
     if(s_w == 0):
