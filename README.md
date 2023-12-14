@@ -1,4 +1,4 @@
-How clean is our code? ![pylint](https://img.shields.io/badge/pylint-4.60-red?logo=python&logoColor=white) <!-- This badge will become visible once github actions have write perms. -->
+How clean is our code? ![pylint](https://img.shields.io/badge/pylint-4.68-red?logo=python&logoColor=white) <!-- This badge will become visible once github actions have write perms. -->
 
 # CST 205 Final Project
 
