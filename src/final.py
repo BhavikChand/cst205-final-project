@@ -1,4 +1,5 @@
-#Author: Michael Conley
+#Github: https://github.com/BhavikChand/cst205-final-project.git
+#Author: Michael Conley, Bhavik Chand, Christopher Drumm, Elijah Hart
 #Class: CST 205
 #Date: 12/4/2023
 #Description: Creates a window that takes indexes, an xy coordinate, sizes for both images, cropping for all sides of both images, edge blending style and strength, aorner style, and manipulation choice, then places the second image on the first according to the information given.
